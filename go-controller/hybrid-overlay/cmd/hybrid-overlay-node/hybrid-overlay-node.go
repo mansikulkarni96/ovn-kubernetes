@@ -40,6 +40,10 @@ func main() {
 		return nil
 	}
 
+	if err := controller.InitService(c.Name); err != nil {
+		klog.Exit(err)
+	}
+
 	ctx := context.Background()
 
 	// trap SIGHUP, SIGINT, SIGTERM, SIGQUIT and
