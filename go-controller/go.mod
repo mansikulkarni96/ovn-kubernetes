@@ -22,6 +22,7 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/urfave/cli/v2 v2.2.0
 	github.com/vishvananda/netlink v0.0.0-20200625175047-bca67dfc8220
+	golang.org/x/sys v0.0.0-20200121082415-34d275377bf9
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7
 	gopkg.in/gcfg.v1 v1.2.3
@@ -29,8 +30,9 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	k8s.io/api v0.18.5
 	k8s.io/apimachinery v0.18.5
+	k8s.io/apiserver v0.18.5
 	k8s.io/client-go v0.18.5
 	k8s.io/klog v1.0.0
+	k8s.io/klog/v2 v2.3.0
 	k8s.io/utils v0.0.0-20200324210504-a9aa75ae1b89
-	sigs.k8s.io/structured-merge-diff v0.0.0-20190525122527-15d366b2352e // indirect
 )
