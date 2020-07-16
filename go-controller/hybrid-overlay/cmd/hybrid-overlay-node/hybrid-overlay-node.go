@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 
 	"github.com/urfave/cli/v2"
@@ -17,14 +18,18 @@ import (
 
 	"k8s.io/client-go/informers"
 	"k8s.io/klog"
+	"k8s.io/kubernetes/pkg/windows/service"
 	kexec "k8s.io/utils/exec"
 )
 
 var nodeName string
+var runAsWindowsService bool
+
+const appName = "hybrid-overlay-node"
 
 func main() {
 	c := cli.NewApp()
-	c.Name = "hybrid-overlay-node"
+	c.Name = appName
 	c.Usage = "a node controller to integrate disparate networks with VXLAN tunnels"
 	c.Version = config.Version
 	c.Flags = config.GetFlags([]cli.Flag{
@@ -32,6 +37,11 @@ func main() {
 			Name:        "node",
 			Usage:       "The name of this node in the Kubernetes cluster.",
 			Destination: &nodeName,
+		},
+		&cli.BoolFlag{
+			Name:        "windows-service",
+			Usage:       "Enables hybrid overlay to run as a Windows service. Ignored on Linux.",
+			Destination: &runAsWindowsService,
 		}})
 	c.Action = func(c *cli.Context) error {
 		if err := runHybridOverlay(c); err != nil {
@@ -81,6 +91,15 @@ func runHybridOverlay(ctx *cli.Context) error {
 
 	if nodeName == "" {
 		return fmt.Errorf("missing node name; use the 'node' flag to provide one")
+	}
+
+	if runAsWindowsService && runtime.GOOS == "windows" {
+		klog.Infof("Initializing Windows service")
+		if err := service.InitService(appName); err != nil {
+			klog.Exit(err)
+		}
+	} else {
+		klog.Infof("cannot start Windows service")
 	}
 
 	clientset, err := util.NewClientset(&config.Kubernetes)
